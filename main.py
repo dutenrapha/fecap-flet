@@ -1,3 +1,4 @@
+
 import flet as ft
 import requests
 
@@ -33,3 +34,4 @@ def main(page: ft.Page):
     page.add(main_container)
 
 ft.app(target=main)
+
