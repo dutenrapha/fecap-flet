@@ -1,17 +1,71 @@
-from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
-import random
-import uvicorn
+import 'dart:convert';
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
-app = FastAPI()
+void main() {
+  runApp(MyApp());
+}
 
-class SentimentRequest(BaseModel):
-    text: str
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Jogo de Forca',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: JogoForca(),
+    );
+  }
+}
 
-@app.post("/sentiments")
-async def get_sentiment(sentiment_request: SentimentRequest):
-    sentiment = random.choice(["positivo", "negativo"])
-    return {"sentiment": sentiment}
+class JogoForca extends StatefulWidget {
+  @override
+  _JogoForcaState createState() => _JogoForcaState();
+}
 
-if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8080, log_level="info")
+class _JogoForcaState extends State<JogoForca> {
+  String palavra = '';
+  String palavraEscondida = '';
+
+  @override
+  void initState() {
+    super.initState();
+    obterNovaPalavra();
+  }
+
+  void obterNovaPalavra() async {
+    final response = await http.get(Uri.parse('http://localhost:8000/palavra'));
+    final jsonData = json.decode(response.body);
+    setState(() {
+      palavra = jsonData['palavra'];
+      palavraEscondida = '_' * palavra.length;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Jogo de Forca'),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Text(
+              'Palavra: $palavraEscondida',
+              style: TextStyle(fontSize: 24),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                obterNovaPalavra();
+              },
+              child: Text('Nova Palavra'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
