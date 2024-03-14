@@ -1,40 +1,27 @@
-import flet as ft
+import flet
 import requests
 
-def main(page: ft.Page):
-    lbl_output = ft.Text("", size=100, text_align="center", width=3000)
+app = flet.App()
 
-    def on_send_click(e):
-        text = txt_input.value
-        response = requests.post("http://localhost:8080/sentiments", json={"text": text})
-        sentiment_response = ""
-        if response.status_code == 200:
-            sentiment = response.json()["sentiment"]
-            sentiment_response = "😊" if sentiment == "positivo" else "😞"
-        else:
-            sentiment_response = "Erro ao processar o sentimento"
+def jogar_cara_coroa(escolha):
+    response = requests.get(f"http://localhost:8000/jogar/{escolha}")
+    data = response.json()
+    return data
 
-        lbl_output.value = sentiment_response
-        lbl_output.update()
+@app.route("/")
+def index(req, res):
+    escolha_cara = flet.Button("Cara", on_click=lambda e: jogar(e, "cara"))
+    escolha_coroa = flet.Button("Coroa", on_click=lambda e: jogar(e, "coroa"))
+    resultado = flet.Text("", size=100, text_align="center")
 
-        txt_input.value = ""
-        page.update()
+    def jogar(event, escolha):
+        resultado_jogo = jogar_cara_coroa(escolha)
+        resultado.value = f"Resultado: {resultado_jogo['resultado']}. {resultado_jogo['mensagem']}"
+        resultado.update()
 
-    txt_input = ft.TextField(hint_text="Digite seu texto aqui", width=300, autofocus=True)
-    send_button = ft.ElevatedButton(text="Enviar", on_click=on_send_click)
+    res.add(escolha_cara)
+    res.add(escolha_coroa)
+    res.add(resultado)
 
-    input_container = ft.Row(
-        controls=[txt_input, send_button],
-        alignment="center",
-        expand=True
-    )
-
-    main_container = ft.Column(
-        controls=[lbl_output, input_container],
-        alignment="center",
-        expand=True
-    )
-
-    page.add(main_container)
-
-ft.app(target=main)
+if __name__ == "__main__":
+    app.run()

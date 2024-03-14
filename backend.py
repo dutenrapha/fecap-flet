@@ -1,17 +1,16 @@
-from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
-import random
-import uvicorn
+from fastapi import FastAPI
+from random import choice
 
 app = FastAPI()
 
-class SentimentRequest(BaseModel):
-    text: str
+@app.get("/")
+def read_root():
+    return {"message": "Bem-vindo ao jogo Cara ou Coroa!"}
 
-@app.post("/sentiments")
-async def get_sentiment(sentiment_request: SentimentRequest):
-    sentiment = random.choice(["positivo", "negativo"])
-    return {"sentiment": sentiment}
-
-if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8080, log_level="info")
+@app.get("/jogar/{escolha}")
+def jogar(escolha: str):
+    resultado = choice(["cara", "coroa"])
+    if escolha.lower() == resultado:
+        return {"resultado": resultado, "mensagem": "Você ganhou!"}
+    else:
+        return {"resultado": resultado, "mensagem": "Você perdeu!"}
