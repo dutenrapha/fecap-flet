@@ -4,13 +4,12 @@ import uvicorn
 
 app = FastAPI()
 
-@app.get("/")
-async def root():
-    return {"message": "Hello World"}
+emojis = ["😀", "😍", "🎉", "🚀", "💡", "👍", "👏"]
 
-@app.post("/hello")
-async def say_hello(name):
-    return {"message": "Hello, " + name + "! 👋"}
+@app.get("/api/emoji")
+async def get_random_emoji():
+    return random.choice(emojis)
+
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8080, log_level="debug")
