@@ -2,29 +2,24 @@ import flet as ft
 import requests
 
 def main(page: ft.Page):
-    lbl_output = ft.Text("", size=100, text_align="center", width=3000)
+    lbl_output = ft.Text("SEU EMOJI SORTEADO É:", size=100, text_align="center", width=3000, style={"background-color": "lightgreen", "padding": "10px", "border": "1px solid green", "border-radius": "5px"})
 
     def on_send_click(e):
-        text = txt_input.value
-        response = requests.post("http://localhost:8080/sentiments", json={"text": text})
-        sentiment_response = ""
+        response = requests.get("http://localhost:8080/api/emoji")  
+        sorteio_response = ""
         if response.status_code == 200:
-            sentiment = response.json()["sentiment"]
-            sentiment_response = "😊" if sentiment == "positivo" else "😞"
+            sorteio = response.text
+            sorteio_response = sorteio
         else:
-            sentiment_response = "Erro ao processar o sentimento"
+            sorteio_response = "Erro ao processar o sorteio"
 
-        lbl_output.value = sentiment_response
+        lbl_output.value = sorteio_response
         lbl_output.update()
 
-        txt_input.value = ""
-        page.update()
-
-    txt_input = ft.TextField(hint_text="Digite seu texto aqui", width=300, autofocus=True)
-    send_button = ft.ElevatedButton(text="Enviar", on_click=on_send_click)
+    send_button = ft.ElevatedButton(text="Sortear Emoji", on_click=on_send_click)
 
     input_container = ft.Row(
-        controls=[txt_input, send_button],
+        controls=[send_button],
         alignment="center",
         expand=True
     )
