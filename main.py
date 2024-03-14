@@ -1,40 +1,34 @@
+from fastapi import FastAPI
+from pydantic import BaseModel
+from typing import List
 
-import flet as ft
-import requests
+app = FastAPI()
 
-def main(page: ft.Page):
-    lbl_output = ft.Text("", size=100, text_align="center", width=3000)
+class Tarefa(BaseModel):
+    título: str
+    concluída: bool
 
-    def on_send_click(e):
-        text = txt_input.value
-        response = requests.post("http://0.0.0.0:8080/hello", json={"name": text})
-        if response.status_code == 200:
-            output = response.json()["message"]
-        else:
-            output = "Erro ao processar"
+tarefas = []
 
-        lbl_output.value = output
-        lbl_output.update()
+@app.get("/tarefas", response_model=List[Tarefa])
+def ler_tarefas():
+    return tarefas
 
-        txt_input.value = ""
-        page.update()
+@app.post("/tarefas", response_model=Tarefa)
+def criar_tarefa(tarefa: Tarefa):
+    tarefas.append(tarefa)
+    return tarefa
 
-    txt_input = ft.TextField(hint_text="Digite seu nome aqui", width=300, autofocus=True)
-    send_button = ft.ElevatedButton(text="Enviar", on_click=on_send_click)
+@app.get("/tarefas/{tarefa_id}", response_model=Tarefa)
+def ler_tarefa(tarefa_id: int):
+    return tarefas[tarefa_id]
 
-    input_container = ft.Row(
-        controls=[txt_input, send_button],
-        alignment="center",
-        expand=True
-    )
+@app.put("/tarefas/{tarefa_id}", response_model=Tarefa)
+def atualizar_tarefa(tarefa_id: int, tarefa: Tarefa):
+    tarefas[tarefa_id] = tarefa
+    return tarefa
 
-    main_container = ft.Column(
-        controls=[lbl_output, input_container],
-        alignment="center",
-        expand=True
-    )
-
-    page.add(main_container)
-
-ft.app(target=main)
-
+@app.delete("/tarefas/{tarefa_id}")
+def deletar_tarefa(tarefa_id: int):
+    del tarefas[tarefa_id]
+    return {"detalhe": "Tarefa excluída."}
