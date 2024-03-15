@@ -1,40 +1,17 @@
 import flet as ft
-import requests
 
-def main(page: ft.Page):
-    lbl_output = ft.Text("", size=100, text_align="center", width=3000)
-
-    def on_send_click(e):
-        text = txt_input.value
-        response = requests.post("http://localhost:8080/sentiments", json={"text": text})
-        sentiment_response = ""
-        if response.status_code == 200:
-            sentiment = response.json()["sentiment"]
-            sentiment_response = "😊" if sentiment == "positivo" else "😞"
+def main(page):
+    def btn(e):
+        if not txt_nome.value:
+            txt_nome.error_text = "Por favor, digite seu nome"
+            page.update()
         else:
-            sentiment_response = "Erro ao processar o sentimento"
+            nome = txt_nome.value
+            page.clean()
+            page.add(ft.Text(f"Olá, {nome}!"))
 
-        lbl_output.value = sentiment_response
-        lbl_output.update()
+    txt_nome = ft.TextField(label="Digite seu nome")
 
-        txt_input.value = ""
-        page.update()
-
-    txt_input = ft.TextField(hint_text="Digite seu texto aqui", width=300, autofocus=True)
-    send_button = ft.ElevatedButton(text="Enviar", on_click=on_send_click)
-
-    input_container = ft.Row(
-        controls=[txt_input, send_button],
-        alignment="center",
-        expand=True
-    )
-
-    main_container = ft.Column(
-        controls=[lbl_output, input_container],
-        alignment="center",
-        expand=True
-    )
-
-    page.add(main_container)
+    page.add(txt_nome, ft.ElevatedButton("Enviar", on_click=btn))
 
 ft.app(target=main)
