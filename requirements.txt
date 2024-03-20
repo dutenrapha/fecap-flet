@@ -8,7 +8,7 @@ charset-normalizer==3.3.2
 click==8.1.7
 cookiecutter==2.6.0
 exceptiongroup==1.2.0
-fastapi==0.109.2
+fastapi==0.110.0
 flet==0.21.0
 flet-core==0.21.0
 flet-runtime==0.21.0
@@ -42,3 +42,8 @@ typing-extensions==4.10.0
 urllib3==2.2.1
 uvicorn==0.27.1
 watchdog==3.0.0
+passlib==1.7.4
+bcrypt==3.2.0
+aiosqlite==0.20.0
+greenlet==3.0.3
+sqlalchemy==2.0.28
