@@ -1,17 +1,21 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-import random
-import uvicorn
+
 
 app = FastAPI()
 
-class SentimentRequest(BaseModel):
-    text: str
+class Pessoa(BaseModel):
+    name: str
 
-@app.post("/sentiments")
-async def get_sentiment(sentiment_request: SentimentRequest):
-    sentiment = random.choice(["positivo", "negativo"])
-    return {"sentiment": sentiment}
+@app.get("/")
+async def root():
+    return {"message": "Hi I'm Gu!"}
 
-if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8080, log_level="info")
+@app.post("/hello")
+async def say_hello(pessoa: Pessoa):
+    return {"message": "Hello, " + pessoa.name + "! 👋"}
+
+@app.post("/bye")
+async def say_bye(pessoa: Pessoa):
+    return {"message": "Bye, " + pessoa.name + "! 👋"}
+
