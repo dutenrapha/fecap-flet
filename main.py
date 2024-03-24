@@ -1,17 +1,22 @@
 
 import flet as ft
 import requests
+api_token = "mytoken"
 
 def main(page: ft.Page):
     lbl_output = ft.Text("", size=100, text_align="center", width=3000)
 
     def on_send_click(e):
         text = txt_input.value
-        response = requests.post("http://0.0.0.0:8080/hello", json={"name": text})
+        response = requests.post(
+            "http://gustavogranero.pythonanywhere.com/hello",
+            headers={"Authorization": f"Token {api_token}"},
+            json={"name": text},
+        )
         if response.status_code == 200:
             output = response.json()["message"]
         else:
-            output = "Erro ao processar"
+            output = "Erro ao processar" + str(response)
 
         lbl_output.value = output
         lbl_output.update()
